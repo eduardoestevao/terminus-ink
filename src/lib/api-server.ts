@@ -1,8 +1,11 @@
-// Server-side API helpers for build-time data fetching
-// Used by generateStaticParams and page components during next build
+// Server-side API helpers for SSR data fetching.
+// Uses the workers.dev URL for server-to-server calls because Cloudflare
+// Workers can't fetch other Workers on the same zone via custom domains.
 
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://api.terminus.ink";
+  process.env.SERVER_API_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://terminus-api.tydor-eduardo.workers.dev";
 
 export async function fetchAllExperiments() {
   try {
