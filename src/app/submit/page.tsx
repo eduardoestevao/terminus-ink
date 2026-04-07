@@ -34,7 +34,7 @@ export default function SubmitPage() {
   async function signIn() {
     await supabase.auth.signInWithOAuth({
       provider: "github",
-      options: { redirectTo: window.location.href },
+      options: { redirectTo: `${window.location.origin}/submit` },
     });
   }
 

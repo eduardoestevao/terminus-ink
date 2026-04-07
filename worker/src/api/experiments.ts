@@ -21,21 +21,31 @@ app.get("/", async (c) => {
     return c.json({ error: "Invalid query parameters", details: query.error.flatten() }, 400);
   }
 
-  const supabase = createClient(c.env.SUPABASE_URL, c.env.SUPABASE_ANON_KEY);
-  const experiments = await listExperiments(supabase, query.data);
-  return c.json(experiments);
+  try {
+    const supabase = createClient(c.env.SUPABASE_URL, c.env.SUPABASE_ANON_KEY);
+    const experiments = await listExperiments(supabase, query.data);
+    return c.json(experiments);
+  } catch (err) {
+    console.error("Failed to list experiments:", err);
+    return c.json({ error: "Failed to fetch experiments" }, 500);
+  }
 });
 
 // GET /api/experiments/:slug — get single experiment (public)
 app.get("/:slug", async (c) => {
-  const slug = c.req.param("slug");
-  const supabase = createClient(c.env.SUPABASE_URL, c.env.SUPABASE_ANON_KEY);
-  const experiment = await getExperimentBySlug(supabase, slug);
+  try {
+    const slug = c.req.param("slug");
+    const supabase = createClient(c.env.SUPABASE_URL, c.env.SUPABASE_ANON_KEY);
+    const experiment = await getExperimentBySlug(supabase, slug);
 
-  if (!experiment) {
-    return c.json({ error: "Experiment not found" }, 404);
+    if (!experiment) {
+      return c.json({ error: "Experiment not found" }, 404);
+    }
+    return c.json(experiment);
+  } catch (err) {
+    console.error("Failed to get experiment:", err);
+    return c.json({ error: "Failed to fetch experiment" }, 500);
   }
-  return c.json(experiment);
 });
 
 // POST /api/experiments — submit experiment (auth required)
@@ -95,8 +105,8 @@ app.post("/", requireAuth, async (c) => {
       201
     );
   } catch (err) {
-    const message = err instanceof Error ? err.message : "Unknown error";
-    return c.json({ error: message }, 500);
+    console.error("Failed to insert experiment:", err);
+    return c.json({ error: "Failed to submit experiment" }, 500);
   }
 });
 
