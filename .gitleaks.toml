@@ -7,4 +7,5 @@ paths = [
   '''package-lock\.json''',
   '''\.generated/''',
   '''wrangler\.toml''',
+  '''\.github/workflows/build\.yml''',
 ]

@@ -1,7 +1,7 @@
 name = "terminus-ink"
 compatibility_date = "2026-04-07"
 compatibility_flags = ["nodejs_compat"]
-pages_build_output_dir = ".worker/static"
+pages_build_output_dir = ".open-next/assets"
 
 [vars]
 NEXT_PUBLIC_API_URL = "https://api.terminus.ink"

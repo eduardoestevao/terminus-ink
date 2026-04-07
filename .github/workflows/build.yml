@@ -1,0 +1,38 @@
+name: Build
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+env:
+  NEXT_PUBLIC_API_URL: https://api.terminus.ink
+  NEXT_PUBLIC_SUPABASE_URL: https://fxlpelewdkugkthcvazi.supabase.co
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: sb_publishable_zve6Ro59kiEyS0oWK7TmdQ_qoATOaXm
+
+jobs:
+  build:
+    name: Lint, Typecheck & Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: OpenNext Build (Cloudflare)
+        run: npx @opennextjs/cloudflare build
+
+      - name: Verify output directory
+        run: test -d .open-next/assets
