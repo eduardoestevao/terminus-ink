@@ -42,6 +42,12 @@ export default function Header() {
             About
           </Link>
           <Link
+            href="/keys"
+            className="text-text-secondary transition-colors hover:text-text"
+          >
+            API Keys
+          </Link>
+          <Link
             href="/submit"
             className="rounded-md border border-gold/40 px-3.5 py-1.5 text-gold transition-all hover:border-gold hover:bg-gold-glow"
           >

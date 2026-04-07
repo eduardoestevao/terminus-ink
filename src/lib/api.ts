@@ -30,6 +30,45 @@ export async function fetchTags() {
   return res.json();
 }
 
+export async function createApiKey(label: string, token: string) {
+  const res = await fetch(`${API_URL}/api/keys`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ label }),
+  });
+  const body = await res.json();
+  if (!res.ok) throw new Error(body.error || `API error: ${res.status}`);
+  return body as { key: string; label: string };
+}
+
+export async function listApiKeys(token: string) {
+  const res = await fetch(`${API_URL}/api/keys`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const body = await res.json();
+  if (!res.ok) throw new Error(body.error || `API error: ${res.status}`);
+  return body as {
+    id: string;
+    label: string;
+    created_at: string;
+    last_used: string | null;
+    revoked: boolean;
+  }[];
+}
+
+export async function revokeApiKey(id: string, token: string) {
+  const res = await fetch(`${API_URL}/api/keys/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const body = await res.json();
+  if (!res.ok) throw new Error(body.error || `API error: ${res.status}`);
+  return body;
+}
+
 export async function submitExperiment(
   data: Record<string, unknown>,
   token: string

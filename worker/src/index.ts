@@ -3,6 +3,7 @@ import { createCors } from "./middleware/cors";
 import { rateLimitRead, rateLimitWrite } from "./middleware/rate-limit";
 import experiments from "./api/experiments";
 import tags from "./api/tags";
+import keys from "./api/keys";
 import { handleMcp } from "./mcp/server";
 import type { Env } from "./types";
 
@@ -33,6 +34,7 @@ app.get("/", (c) => c.json({ name: "terminus-api", version: "0.1.0" }));
 // REST API
 app.route("/api/experiments", experiments);
 app.route("/api/tags", tags);
+app.route("/api/keys", keys);
 
 // MCP endpoint
 app.post("/mcp", async (c) => {
