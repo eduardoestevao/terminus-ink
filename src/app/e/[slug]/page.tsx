@@ -1,17 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-  fetchAllExperiments,
-  fetchExperimentBySlug,
-} from "@/lib/api-server";
+import { fetchExperimentBySlug } from "@/lib/api-server";
 import TagBadge from "@/components/TagBadge";
 import type { Metadata } from "next";
 import type { Experiment } from "@/lib/types";
 
-export async function generateStaticParams() {
-  const experiments: Experiment[] = await fetchAllExperiments();
-  return experiments.map((e) => ({ slug: e.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,

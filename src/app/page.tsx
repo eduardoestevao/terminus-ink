@@ -4,6 +4,8 @@ import ExperimentCard from "@/components/ExperimentCard";
 import { fetchAllExperiments } from "@/lib/api-server";
 import type { Experiment } from "@/lib/types";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const experiments: Experiment[] = await fetchAllExperiments();
   const hasExperiments = experiments.length > 0;

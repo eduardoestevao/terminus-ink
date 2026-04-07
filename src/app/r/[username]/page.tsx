@@ -3,14 +3,7 @@ import ExperimentCard from "@/components/ExperimentCard";
 import type { Metadata } from "next";
 import type { Experiment } from "@/lib/types";
 
-export async function generateStaticParams() {
-  const experiments: Experiment[] = await fetchAllExperiments();
-  const authors = new Set<string>();
-  for (const exp of experiments) {
-    if (exp.authorUsername) authors.add(exp.authorUsername);
-  }
-  return Array.from(authors).map((username) => ({ username }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,

@@ -1,12 +1,9 @@
-import { fetchAllExperiments, fetchAllTags } from "@/lib/api-server";
+import { fetchAllExperiments } from "@/lib/api-server";
 import ExperimentCard from "@/components/ExperimentCard";
 import type { Metadata } from "next";
 import type { Experiment } from "@/lib/types";
 
-export async function generateStaticParams() {
-  const tags: { tag: string; count: number }[] = await fetchAllTags();
-  return tags.map(({ tag }) => ({ tag }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,

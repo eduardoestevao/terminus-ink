@@ -2,6 +2,8 @@ import Link from "next/link";
 import { fetchAllTags } from "@/lib/api-server";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Tags — terminus.ink",
   description: "Browse experiments by tag",
