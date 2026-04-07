@@ -11,9 +11,13 @@ binding = "ASSETS"
 
 [vars]
 NEXT_PUBLIC_API_URL = "https://api.terminus.ink"
-SERVER_API_URL = "https://terminus-api.tydor-eduardo.workers.dev"
 NEXT_PUBLIC_SUPABASE_URL = "https://fxlpelewdkugkthcvazi.supabase.co"
 NEXT_PUBLIC_SUPABASE_ANON_KEY = "sb_publishable_zve6Ro59kiEyS0oWK7TmdQ_qoATOaXm"
+
+# Service binding — calls terminus-api Worker directly (no public URL needed)
+[[services]]
+binding = "API"
+service = "terminus-api"
 
 # Custom domain — requires CNAME for terminus.ink in CF DNS
 [[routes]]

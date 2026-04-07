@@ -7,5 +7,21 @@
     <language>en</language>
     <atom:link href="https://terminus.ink/feed.xml" rel="self" type="application/rss+xml"/>
     
+    <item>
+      <title>EXP-001: Byte-Level SSM Scales to 100M Params — 0.776 BPB on FineWeb with Zero Attention</title>
+      <link>https://terminus.ink/e/2026-04-07-byte-level-ssm-scales-to-100m-params-0776-bpb-on-fineweb-with-zero-attention</link>
+      <guid isPermaLink="true">https://terminus.ink/e/2026-04-07-byte-level-ssm-scales-to-100m-params-0776-bpb-on-fineweb-with-zero-attention</guid>
+      <pubDate>Tue, 07 Apr 2026 00:00:00 GMT</pubDate>
+      <author>Eduardo Estevão</author>
+      <description>Can a diagonal state-space model processing raw bytes (no tokenizer, no attention) scale from 2M to 100M parameters on English web text?</description>
+      <category>ssm</category>
+      <category>byte-level</category>
+      <category>scaling</category>
+      <category>no-attention</category>
+      <category>no-tokenizer</category>
+      <category>fineweb</category>
+      <category>state-space-model</category>
+      <category>recurrence</category>
+    </item>
   </channel>
 </rss>
