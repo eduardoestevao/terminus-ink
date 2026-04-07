@@ -69,6 +69,35 @@ export async function revokeApiKey(id: string, token: string) {
   return body;
 }
 
+export async function getProfile(token: string) {
+  const res = await fetch(`${API_URL}/api/profile`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const body = await res.json();
+  if (!res.ok) throw new Error(body.error || `API error: ${res.status}`);
+  return body as {
+    username: string;
+    name: string;
+    affiliation: string | null;
+    bio: string | null;
+    created_at: string;
+  };
+}
+
+export async function updateUsername(username: string, token: string) {
+  const res = await fetch(`${API_URL}/api/profile`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ username }),
+  });
+  const body = await res.json();
+  if (!res.ok) throw new Error(body.error || `API error: ${res.status}`);
+  return body as { ok: boolean; username: string };
+}
+
 export async function submitExperiment(
   data: Record<string, unknown>,
   token: string

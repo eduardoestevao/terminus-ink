@@ -72,7 +72,7 @@ export default async function Home() {
             </pre>
             <p className="text-xs text-text-muted">
               Read tools work without auth. To submit experiments,{" "}
-              <Link href="/keys" className="text-gold transition-colors hover:text-gold-light">
+              <Link href="/profile" className="text-gold transition-colors hover:text-gold-light">
                 generate an API key
               </Link>{" "}
               and add{" "}

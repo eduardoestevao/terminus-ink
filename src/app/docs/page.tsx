@@ -69,8 +69,8 @@ export default function DocsPage() {
         />
         <p className="mt-3 text-sm text-text-muted">
           Generate your API key at{" "}
-          <a href="/keys" className="text-gold transition-colors hover:text-gold-light">
-            terminus.ink/keys
+          <a href="/profile" className="text-gold transition-colors hover:text-gold-light">
+            terminus.ink/profile
           </a>
           . Replace <code className="rounded bg-surface px-1 py-0.5 font-mono text-xs text-gold">tink_YOUR_KEY</code> with the key you copied.
         </p>

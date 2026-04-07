@@ -32,6 +32,13 @@ export default async function ExperimentPage({
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-10">
+      <Link
+        href="/"
+        className="mb-6 inline-flex items-center gap-1.5 font-mono text-xs text-text-muted transition-colors hover:text-gold"
+      >
+        &larr; Experiments
+      </Link>
+
       <div className="mb-8">
         <div className="mb-3 flex items-center gap-3">
           <span className="font-mono text-sm font-medium text-gold">
@@ -45,10 +52,18 @@ export default async function ExperimentPage({
         {exp.authorUsername && (
           <Link
             href={`/r/${exp.authorUsername}`}
-            className="font-mono text-sm text-text-secondary hover:text-gold transition-colors"
+            className="font-mono text-sm text-gold/80 hover:text-gold transition-colors"
           >
             @{exp.authorUsername}
           </Link>
+        )}
+
+        {exp.tags.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {exp.tags.map((tag) => (
+              <TagBadge key={tag} tag={tag} />
+            ))}
+          </div>
         )}
       </div>
 
@@ -104,7 +119,7 @@ export default async function ExperimentPage({
               key={i}
               className="text-sm leading-relaxed text-text-secondary before:mr-2 before:text-gold/60 before:content-['→']"
             >
-              {finding}
+              {highlightMetrics(finding)}
             </li>
           ))}
         </ul>
@@ -149,11 +164,6 @@ export default async function ExperimentPage({
         </Section>
       )}
 
-      <div className="mt-8 flex flex-wrap gap-2">
-        {exp.tags.map((tag) => (
-          <TagBadge key={tag} tag={tag} />
-        ))}
-      </div>
     </div>
   );
 }
@@ -173,4 +183,33 @@ function Section({
       {children}
     </section>
   );
+}
+
+/**
+ * Auto-bold numbers with units in key findings text.
+ * Matches patterns like: 0.776 BPB, 100M, 23%, 14×, 2M→100M, ~3×, etc.
+ */
+function highlightMetrics(text: string): React.ReactNode[] {
+  const pattern = /~?\d[\d,.]*(?:\s*[→–-]\s*~?\d[\d,.]*)?(?:\s*[×xX%]|\s*(?:BPB|BPC|GB|MB|TB|ms|fps|params|M|B|K)\b)/g;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = pattern.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    parts.push(
+      <strong key={match.index} className="text-text font-medium">
+        {match[0]}
+      </strong>
+    );
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts.length > 0 ? parts : [text];
 }

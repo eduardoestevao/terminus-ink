@@ -42,10 +42,10 @@ export default function Header() {
             About
           </Link>
           <Link
-            href="/keys"
+            href="/profile"
             className="text-text-secondary transition-colors hover:text-text"
           >
-            API Keys
+            Profile
           </Link>
           <Link
             href="/submit"
