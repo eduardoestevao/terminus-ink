@@ -34,5 +34,5 @@ jobs:
       - name: OpenNext Build (Cloudflare)
         run: npx @opennextjs/cloudflare build
 
-      - name: Verify output directory
-        run: test -d .open-next/assets
+      - name: Verify output
+        run: test -f .open-next/worker.js && test -d .open-next/assets

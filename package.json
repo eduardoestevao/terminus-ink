@@ -9,11 +9,11 @@
   "scripts": {
     "dev": "next dev",
     "generate-feed": "tsx scripts/generate-feed.ts",
-    "build": "tsx scripts/generate-feed.ts && next build",
+    "build": "tsx scripts/generate-feed.ts && next build --webpack",
     "build:cf": "npx @opennextjs/cloudflare build",
     "start": "next start",
     "lint": "eslint",
-    "deploy": "npm run build:cf && npx wrangler pages deploy .open-next/assets --project-name terminus-ink",
+    "deploy": "npm run build:cf && npx wrangler deploy",
     "prepare": "husky"
   },
   "dependencies": {

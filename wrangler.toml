@@ -1,9 +1,20 @@
 name = "terminus-ink"
+account_id = "5f8a6d4c3c3173fe880d804a12a992ac"
+main = ".open-next/worker.js"
+workers_dev = true
 compatibility_date = "2026-04-07"
 compatibility_flags = ["nodejs_compat"]
-pages_build_output_dir = ".open-next/assets"
+
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
 
 [vars]
 NEXT_PUBLIC_API_URL = "https://api.terminus.ink"
 NEXT_PUBLIC_SUPABASE_URL = "https://fxlpelewdkugkthcvazi.supabase.co"
 NEXT_PUBLIC_SUPABASE_ANON_KEY = "sb_publishable_zve6Ro59kiEyS0oWK7TmdQ_qoATOaXm"
+
+# Custom domain — requires CNAME for terminus.ink in CF DNS
+[[routes]]
+pattern = "terminus.ink/*"
+zone_name = "terminus.ink"
