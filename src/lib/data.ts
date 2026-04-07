@@ -1,7 +1,6 @@
-import { Author, Experiment } from "./types";
+import type { Experiment } from "./types";
 
-export const authors: Record<string, Author> = {};
-
+// Will be populated by build-time fetch script
 export const experiments: Experiment[] = [];
 
 export function getExperimentBySlug(slug: string): Experiment | undefined {
@@ -9,7 +8,7 @@ export function getExperimentBySlug(slug: string): Experiment | undefined {
 }
 
 export function getExperimentsByAuthor(username: string): Experiment[] {
-  return experiments.filter((e) => e.author === username);
+  return experiments.filter((e) => e.authorUsername === username);
 }
 
 export function getExperimentsByTag(tag: string): Experiment[] {
@@ -26,4 +25,12 @@ export function getAllTags(): { tag: string; count: number }[] {
   return Array.from(tagMap.entries())
     .map(([tag, count]) => ({ tag, count }))
     .sort((a, b) => b.count - a.count);
+}
+
+export function getAllAuthors(): string[] {
+  const authors = new Set<string>();
+  for (const exp of experiments) {
+    if (exp.authorUsername) authors.add(exp.authorUsername);
+  }
+  return Array.from(authors);
 }

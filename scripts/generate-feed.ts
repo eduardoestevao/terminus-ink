@@ -1,7 +1,28 @@
-import { writeFileSync } from "fs";
-import { experiments, authors } from "../src/lib/data";
+import { readFileSync, writeFileSync, existsSync } from "fs";
 
 const siteUrl = "https://terminus.ink";
+
+interface Experiment {
+  id: string;
+  slug: string;
+  title: string;
+  date: string;
+  question: string;
+  tags: string[];
+  authorUsername?: string;
+  authorName?: string;
+}
+
+let experiments: Experiment[] = [];
+try {
+  if (existsSync(".generated/experiments.json")) {
+    experiments = JSON.parse(
+      readFileSync(".generated/experiments.json", "utf-8")
+    );
+  }
+} catch {
+  // No data yet
+}
 
 function escapeXml(s: string): string {
   return s
@@ -20,7 +41,7 @@ const items = experiments
       <link>${siteUrl}/e/${exp.slug}</link>
       <guid isPermaLink="true">${siteUrl}/e/${exp.slug}</guid>
       <pubDate>${new Date(exp.date).toUTCString()}</pubDate>
-      <author>${escapeXml(authors[exp.author]?.name || exp.author)}</author>
+      <author>${escapeXml(exp.authorName || exp.authorUsername || "unknown")}</author>
       <description>${escapeXml(exp.question)}</description>
       ${exp.tags.map((t) => `<category>${escapeXml(t)}</category>`).join("\n      ")}
     </item>`
@@ -40,4 +61,4 @@ const feed = `<?xml version="1.0" encoding="UTF-8"?>
 </rss>`;
 
 writeFileSync("public/feed.xml", feed.trim());
-console.log("Generated public/feed.xml");
+console.log(`Generated public/feed.xml (${experiments.length} items)`);

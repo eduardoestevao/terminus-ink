@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Experiment } from "@/lib/types";
+import type { Experiment } from "@/lib/types";
 
 export default function ExperimentCard({ experiment }: { experiment: Experiment }) {
   const isNegativeResult = experiment.tags.includes("negative-result");

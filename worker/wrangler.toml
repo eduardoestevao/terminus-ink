@@ -1,12 +1,18 @@
 name = "terminus-api"
 account_id = "5f8a6d4c3c3173fe880d804a12a992ac"
 main = "src/index.ts"
+workers_dev = true
 compatibility_date = "2026-04-07"
 compatibility_flags = ["nodejs_compat"]
 
 [vars]
-FRONTEND_ORIGIN = "https://terminus-ink.pages.dev"
+FRONTEND_ORIGIN = "https://terminus.ink"
 SUPABASE_URL = "https://fxlpelewdkugkthcvazi.supabase.co"
+
+# Custom domain — requires AAAA record for api.terminus.ink in CF DNS
+[[routes]]
+pattern = "api.terminus.ink/*"
+zone_name = "terminus.ink"
 
 # Set secrets via: npx wrangler secret put <NAME>
 # Required secrets:

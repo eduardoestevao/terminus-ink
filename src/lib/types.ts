@@ -18,9 +18,13 @@ export interface Experiment {
   };
   keyFindings: string[];
   tags: string[];
-  author: string;
-  chainPrev?: string;
-  chainNext?: string;
-  lessonLearned?: string;
-  toolsUsed?: string;
+  authorId: string;
+  authorUsername?: string;
+  authorName?: string;
+  chainPrev?: string | null;
+  chainNext?: string | null;
+  lessonLearned?: string | null;
+  toolsUsed?: string | null;
+  createdAt: string;
+  status: "published" | "pending_review";
 }

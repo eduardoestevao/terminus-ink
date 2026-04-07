@@ -9,14 +9,15 @@
   "scripts": {
     "dev": "next dev",
     "generate-feed": "tsx scripts/generate-feed.ts",
-    "build": "tsx scripts/generate-feed.ts && next build",
+    "build": "tsx scripts/fetch-data.ts && tsx scripts/generate-feed.ts && next build",
     "start": "next start",
     "lint": "eslint",
     "deploy": "npm run build && npx wrangler pages deploy out --project-name terminus-ink",
     "prepare": "husky"
   },
   "dependencies": {
-    "next": "16.2.2",
+    "@supabase/supabase-js": "^2.102.1",
+    "next": "^16.2.2",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
