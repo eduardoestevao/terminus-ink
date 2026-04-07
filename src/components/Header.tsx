@@ -30,6 +30,12 @@ export default function Header() {
             Tags
           </Link>
           <Link
+            href="/docs"
+            className="text-text-secondary transition-colors hover:text-text"
+          >
+            Docs
+          </Link>
+          <Link
             href="/about"
             className="text-text-secondary transition-colors hover:text-text"
           >

@@ -8,4 +8,5 @@ paths = [
   '''\.generated/''',
   '''wrangler\.toml''',
   '''\.github/workflows/build\.yml''',
+  '''src/app/docs/page\.tsx''',
 ]
