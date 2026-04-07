@@ -2,8 +2,11 @@ import { Hono } from "hono";
 import { createClient } from "@supabase/supabase-js";
 import {
   experimentSubmissionSchema,
+  experimentUpdateSchema,
   listExperimentsQuerySchema,
   insertExperiment,
+  updateExperiment,
+  getExperimentMeta,
   getExperimentBySlug,
   listExperiments,
   validateNoHtml,
@@ -107,6 +110,64 @@ app.post("/", requireAuth, async (c) => {
   } catch (err) {
     console.error("Failed to insert experiment:", err);
     return c.json({ error: "Failed to submit experiment" }, 500);
+  }
+});
+
+// PUT /api/experiments/:slug — edit experiment (auth required, author-only, 48h window)
+app.put("/:slug", requireAuth, async (c) => {
+  const body = await c.req.json().catch(() => null);
+  if (!body) {
+    return c.json({ error: "Invalid JSON body" }, 400);
+  }
+
+  const parsed = experimentUpdateSchema.safeParse(body);
+  if (!parsed.success) {
+    return c.json({ error: "Validation failed", details: parsed.error.flatten() }, 400);
+  }
+
+  const slug = c.req.param("slug");
+  const auth = c.get("auth");
+  const supabase = createClient(c.env.SUPABASE_URL, c.env.SUPABASE_SERVICE_ROLE_KEY);
+
+  // Check experiment exists and get metadata
+  const meta = await getExperimentMeta(supabase, slug);
+  if (!meta) {
+    return c.json({ error: "Experiment not found" }, 404);
+  }
+
+  // Author-only
+  if (meta.authorId !== auth.userId) {
+    return c.json({ error: "You can only edit your own experiments" }, 403);
+  }
+
+  // 48h window
+  const createdAt = new Date(meta.createdAt).getTime();
+  const now = Date.now();
+  const hoursElapsed = (now - createdAt) / (1000 * 60 * 60);
+  if (hoursElapsed > 48) {
+    return c.json({ error: "Experiments can only be edited within 48 hours of creation" }, 403);
+  }
+
+  const update = parsed.data;
+
+  // Reject raw HTML in updated fields
+  const htmlCheck: Record<string, string | undefined> = {};
+  if (update.title) htmlCheck.title = update.title;
+  if (update.question) htmlCheck.question = update.question;
+  if (update.setup) htmlCheck.setup = update.setup;
+  if (update.lessonLearned) htmlCheck.lessonLearned = update.lessonLearned;
+  if (update.toolsUsed) htmlCheck.toolsUsed = update.toolsUsed;
+  const htmlError = validateNoHtml(htmlCheck);
+  if (htmlError) {
+    return c.json({ error: htmlError }, 400);
+  }
+
+  try {
+    await updateExperiment(supabase, slug, update);
+    return c.json({ ok: true, slug });
+  } catch (err) {
+    console.error("Failed to update experiment:", err);
+    return c.json({ error: "Failed to update experiment" }, 500);
   }
 });
 

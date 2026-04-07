@@ -1,10 +1,12 @@
 // Schemas & types
 export {
   experimentSubmissionSchema,
+  experimentUpdateSchema,
   experimentSchema,
   profileSchema,
   listExperimentsQuerySchema,
   type ExperimentSubmission,
+  type ExperimentUpdate,
   type Experiment,
   type Profile,
   type ListExperimentsQuery,
@@ -14,6 +16,8 @@ export {
 export {
   getNextExperimentId,
   insertExperiment,
+  updateExperiment,
+  getExperimentMeta,
   getExperimentBySlug,
   listExperiments,
   getAllTags,

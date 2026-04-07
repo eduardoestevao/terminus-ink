@@ -39,14 +39,24 @@ export default async function ExperimentPage({
         >
           &larr; Experiments
         </Link>
-        <Link
-          href={`/e/${slug}/md`}
-          target="_blank"
-          className="rounded border border-border px-2.5 py-1 font-mono text-xs text-text-muted transition-colors hover:border-border-hover hover:text-text-secondary"
-          title="View as raw Markdown (for LLM ingestion)"
-        >
-          /md
-        </Link>
+        <div className="flex items-center gap-2">
+          {isEditable(exp.createdAt) && (
+            <Link
+              href={`/e/${slug}/edit`}
+              className="rounded border border-gold/30 px-2.5 py-1 font-mono text-xs text-gold/70 transition-colors hover:border-gold hover:text-gold"
+            >
+              Edit
+            </Link>
+          )}
+          <Link
+            href={`/e/${slug}/md`}
+            target="_blank"
+            className="rounded border border-border px-2.5 py-1 font-mono text-xs text-text-muted transition-colors hover:border-border-hover hover:text-text-secondary"
+            title="View as raw Markdown (for LLM ingestion)"
+          >
+            /md
+          </Link>
+        </div>
       </div>
 
       <div className="mb-8">
@@ -193,6 +203,13 @@ function Section({
       {children}
     </section>
   );
+}
+
+function isEditable(createdAt?: string): boolean {
+  if (!createdAt) return false;
+  const hoursElapsed =
+    (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60);
+  return hoursElapsed <= 48;
 }
 
 /**

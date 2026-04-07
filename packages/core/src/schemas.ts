@@ -50,6 +50,31 @@ export const experimentSubmissionSchema = z.object({
 
 export type ExperimentSubmission = z.infer<typeof experimentSubmissionSchema>;
 
+// --- Experiment update (all fields optional) ---
+
+export const experimentUpdateSchema = z.object({
+  title: safeString(200).optional(),
+  question: safeString(5000).optional(),
+  setup: safeString(5000).optional(),
+  results: resultsSchema.optional(),
+  keyFindings: z
+    .array(safeString(1000))
+    .min(1, "At least one finding required")
+    .max(10)
+    .optional(),
+  tags: z
+    .array(z.string().max(50))
+    .min(1, "At least one tag required")
+    .max(20)
+    .transform(normalizeTags)
+    .optional(),
+  lessonLearned: safeString(5000).optional(),
+  toolsUsed: safeString(2000).optional(),
+  chainPrev: z.string().max(200).optional(),
+});
+
+export type ExperimentUpdate = z.infer<typeof experimentUpdateSchema>;
+
 // --- Full experiment (as stored in DB) ---
 
 export const experimentSchema = z.object({

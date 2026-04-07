@@ -1,8 +1,11 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
   experimentSubmissionSchema,
+  experimentUpdateSchema,
   listExperimentsQuerySchema,
   insertExperiment,
+  updateExperiment,
+  getExperimentMeta,
   getExperimentBySlug,
   listExperiments,
   getAllTags,
@@ -131,6 +134,54 @@ export async function getTagsHandler(
     return ok(JSON.stringify(tags, null, 2));
   } catch (err) {
     return error(err instanceof Error ? err.message : "Failed to get tags");
+  }
+}
+
+/**
+ * edit_experiment — update an existing experiment (author-only, 48h window).
+ */
+export async function editExperiment(
+  supabase: SupabaseClient,
+  args: Record<string, unknown>,
+  userId: string
+): Promise<ToolResult> {
+  const slug = typeof args.slug === "string" ? args.slug : "";
+  if (!slug) return error("slug is required");
+
+  // Remove slug from args before parsing update fields
+  const { slug: _slug, ...updateFields } = args;
+  const parsed = experimentUpdateSchema.safeParse(updateFields);
+  if (!parsed.success) {
+    return error(`Validation failed: ${JSON.stringify(parsed.error.flatten().fieldErrors)}`);
+  }
+
+  const meta = await getExperimentMeta(supabase, slug);
+  if (!meta) return error(`Experiment not found: ${slug}`);
+
+  if (meta.authorId !== userId) {
+    return error("You can only edit your own experiments");
+  }
+
+  const hoursElapsed = (Date.now() - new Date(meta.createdAt).getTime()) / (1000 * 60 * 60);
+  if (hoursElapsed > 48) {
+    return error("Experiments can only be edited within 48 hours of creation");
+  }
+
+  const update = parsed.data;
+  const htmlCheck: Record<string, string | undefined> = {};
+  if (update.title) htmlCheck.title = update.title;
+  if (update.question) htmlCheck.question = update.question;
+  if (update.setup) htmlCheck.setup = update.setup;
+  if (update.lessonLearned) htmlCheck.lessonLearned = update.lessonLearned;
+  if (update.toolsUsed) htmlCheck.toolsUsed = update.toolsUsed;
+  const htmlError = validateNoHtml(htmlCheck);
+  if (htmlError) return error(htmlError);
+
+  try {
+    await updateExperiment(supabase, slug, update);
+    return ok(JSON.stringify({ ok: true, slug, url: `https://terminus.ink/e/${slug}` }, null, 2));
+  } catch (err) {
+    return error(err instanceof Error ? err.message : "Failed to update experiment");
   }
 }
 

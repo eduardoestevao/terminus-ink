@@ -5,6 +5,7 @@ import { hashApiKey } from "../auth/middleware";
 import type { Env } from "../types";
 import {
   submitExperiment,
+  editExperiment,
   listExperimentsHandler,
   getExperimentHandler,
   searchByTagHandler,
@@ -78,6 +79,30 @@ export async function handleMcp(c: Context<{ Bindings: Env }>) {
       return c.json(jsonRpcResult(id, result));
     }
 
+    if (toolName === "edit_experiment") {
+      const authHeader = c.req.header("Authorization");
+      if (!authHeader?.startsWith("Bearer ")) {
+        return c.json(jsonRpcResult(id, {
+          content: [{ type: "text", text: "Authentication required. Provide API key in Authorization header." }],
+          isError: true,
+        }));
+      }
+
+      const token = authHeader.slice(7);
+      const keyHash = await hashApiKey(token);
+      const authResult = await verifyApiKey(supabaseService, keyHash);
+
+      if (!authResult) {
+        return c.json(jsonRpcResult(id, {
+          content: [{ type: "text", text: "Invalid API key" }],
+          isError: true,
+        }));
+      }
+
+      const result = await editExperiment(supabaseService, args, authResult.userId);
+      return c.json(jsonRpcResult(id, result));
+    }
+
     // Read tools are public
     if (toolName === "list_experiments") {
       const result = await listExperimentsHandler(supabaseAnon, args);
@@ -137,6 +162,32 @@ const TOOL_DEFINITIONS = [
         lessonLearned: { type: "string", description: "Optional: what would you do differently?", maxLength: 5000 },
         toolsUsed: { type: "string", description: "Optional: declare AI assistance, hardware, frameworks", maxLength: 2000 },
         chainPrev: { type: "string", description: "Optional: slug of previous experiment in chain", maxLength: 200 },
+      },
+    },
+  },
+  {
+    name: "edit_experiment",
+    description: "Edit an existing experiment. Author-only, within 48 hours of creation. Requires API key authentication. Only include fields you want to change.",
+    inputSchema: {
+      type: "object",
+      required: ["slug"],
+      properties: {
+        slug: { type: "string", description: "Slug of the experiment to edit" },
+        title: { type: "string", maxLength: 200 },
+        question: { type: "string", maxLength: 5000 },
+        setup: { type: "string", maxLength: 5000 },
+        results: {
+          type: "object",
+          properties: {
+            headers: { type: "array", items: { type: "string" } },
+            rows: { type: "array", items: { type: "array", items: { type: "string" } } },
+          },
+        },
+        keyFindings: { type: "array", items: { type: "string" } },
+        tags: { type: "array", items: { type: "string" } },
+        lessonLearned: { type: "string", maxLength: 5000 },
+        toolsUsed: { type: "string", maxLength: 2000 },
+        chainPrev: { type: "string", maxLength: 200 },
       },
     },
   },

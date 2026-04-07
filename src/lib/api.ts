@@ -98,6 +98,24 @@ export async function updateUsername(username: string, token: string) {
   return body as { ok: boolean; username: string };
 }
 
+export async function updateExperiment(
+  slug: string,
+  data: Record<string, unknown>,
+  token: string
+) {
+  const res = await fetch(`${API_URL}/api/experiments/${slug}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  const body = await res.json();
+  if (!res.ok) throw new Error(body.error || `API error: ${res.status}`);
+  return body;
+}
+
 export async function submitExperiment(
   data: Record<string, unknown>,
   token: string

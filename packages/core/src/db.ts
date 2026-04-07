@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Experiment, Profile, ListExperimentsQuery } from "./schemas";
 import { generateSlug, formatExperimentId } from "./slugs";
-import type { ExperimentSubmission } from "./schemas";
+import type { ExperimentSubmission, ExperimentUpdate } from "./schemas";
 
 /**
  * Get the next experiment ID atomically.
@@ -46,6 +46,52 @@ export async function insertExperiment(
 
   if (error) throw new Error(`Failed to insert experiment: ${error.message}`);
   return { id, slug };
+}
+
+/**
+ * Get experiment metadata (author_id, created_at) for auth/edit checks.
+ */
+export async function getExperimentMeta(
+  supabase: SupabaseClient,
+  slug: string
+): Promise<{ authorId: string; createdAt: string } | null> {
+  const { data, error } = await supabase
+    .from("experiments")
+    .select("author_id, created_at")
+    .eq("slug", slug)
+    .single();
+
+  if (error || !data) return null;
+  return { authorId: data.author_id, createdAt: data.created_at };
+}
+
+/**
+ * Update an existing experiment (partial update).
+ */
+export async function updateExperiment(
+  supabase: SupabaseClient,
+  slug: string,
+  update: ExperimentUpdate
+): Promise<void> {
+  const row: Record<string, unknown> = {};
+  if (update.title !== undefined) row.title = update.title;
+  if (update.question !== undefined) row.question = update.question;
+  if (update.setup !== undefined) row.setup = update.setup;
+  if (update.results !== undefined) row.results_json = update.results;
+  if (update.keyFindings !== undefined) row.key_findings = update.keyFindings;
+  if (update.tags !== undefined) row.tags = update.tags;
+  if (update.lessonLearned !== undefined) row.lesson_learned = update.lessonLearned;
+  if (update.toolsUsed !== undefined) row.tools_used = update.toolsUsed;
+  if (update.chainPrev !== undefined) row.chain_prev = update.chainPrev || null;
+
+  if (Object.keys(row).length === 0) return;
+
+  const { error } = await supabase
+    .from("experiments")
+    .update(row)
+    .eq("slug", slug);
+
+  if (error) throw new Error(`Failed to update experiment: ${error.message}`);
 }
 
 /**
