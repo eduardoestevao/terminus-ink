@@ -2,13 +2,18 @@
   "name": "terminus",
   "version": "0.1.0",
   "private": true,
+  "workspaces": [
+    "packages/*",
+    "worker"
+  ],
   "scripts": {
     "dev": "next dev",
     "generate-feed": "tsx scripts/generate-feed.ts",
     "build": "tsx scripts/generate-feed.ts && next build",
     "start": "next start",
     "lint": "eslint",
-    "deploy": "npm run build && npx wrangler pages deploy out --project-name terminus-ink"
+    "deploy": "npm run build && npx wrangler pages deploy out --project-name terminus-ink",
+    "prepare": "husky"
   },
   "dependencies": {
     "next": "16.2.2",
@@ -22,6 +27,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.2",
+    "husky": "^9.1.7",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "typescript": "^5"

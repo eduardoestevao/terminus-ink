@@ -1,0 +1,9 @@
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Allowlist for terminus-ink"
+paths = [
+  '''package-lock\.json''',
+  '''\.generated/''',
+]
