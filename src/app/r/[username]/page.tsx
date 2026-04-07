@@ -1,9 +1,15 @@
-import { getExperimentsByAuthor, getAllAuthors } from "@/lib/data";
+import { fetchAllExperiments } from "@/lib/api-server";
 import ExperimentCard from "@/components/ExperimentCard";
 import type { Metadata } from "next";
+import type { Experiment } from "@/lib/types";
 
 export async function generateStaticParams() {
-  return getAllAuthors().map((username) => ({ username }));
+  const experiments: Experiment[] = await fetchAllExperiments();
+  const authors = new Set<string>();
+  for (const exp of experiments) {
+    if (exp.authorUsername) authors.add(exp.authorUsername);
+  }
+  return Array.from(authors).map((username) => ({ username }));
 }
 
 export async function generateMetadata({
@@ -24,7 +30,10 @@ export default async function ResearcherPage({
   params: Promise<{ username: string }>;
 }) {
   const { username } = await params;
-  const userExperiments = getExperimentsByAuthor(username);
+  const allExperiments: Experiment[] = await fetchAllExperiments();
+  const userExperiments = allExperiments.filter(
+    (e) => e.authorUsername === username
+  );
   const authorName = userExperiments[0]?.authorName;
 
   return (

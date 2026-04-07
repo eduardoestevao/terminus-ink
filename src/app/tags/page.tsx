@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getAllTags } from "@/lib/data";
+import { fetchAllTags } from "@/lib/api-server";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -7,8 +7,8 @@ export const metadata: Metadata = {
   description: "Browse experiments by tag",
 };
 
-export default function TagsPage() {
-  const tags = getAllTags();
+export default async function TagsPage() {
+  const tags: { tag: string; count: number }[] = await fetchAllTags();
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-10">

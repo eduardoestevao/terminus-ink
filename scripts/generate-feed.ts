@@ -1,6 +1,7 @@
-import { readFileSync, writeFileSync, existsSync } from "fs";
+import { writeFileSync } from "fs";
 
 const siteUrl = "https://terminus.ink";
+const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://api.terminus.ink";
 
 interface Experiment {
   id: string;
@@ -13,17 +14,6 @@ interface Experiment {
   authorName?: string;
 }
 
-let experiments: Experiment[] = [];
-try {
-  if (existsSync(".generated/experiments.json")) {
-    experiments = JSON.parse(
-      readFileSync(".generated/experiments.json", "utf-8")
-    );
-  }
-} catch {
-  // No data yet
-}
-
 function escapeXml(s: string): string {
   return s
     .replace(/&/g, "&amp;")
@@ -33,9 +23,18 @@ function escapeXml(s: string): string {
     .replace(/'/g, "&apos;");
 }
 
-const items = experiments
-  .map(
-    (exp) => `
+async function main() {
+  let experiments: Experiment[] = [];
+  try {
+    const res = await fetch(`${apiUrl}/api/experiments?limit=100`);
+    if (res.ok) experiments = await res.json();
+  } catch {
+    // API unreachable — empty feed
+  }
+
+  const items = experiments
+    .map(
+      (exp) => `
     <item>
       <title>${escapeXml(exp.id + ": " + exp.title)}</title>
       <link>${siteUrl}/e/${exp.slug}</link>
@@ -45,10 +44,10 @@ const items = experiments
       <description>${escapeXml(exp.question)}</description>
       ${exp.tags.map((t) => `<category>${escapeXml(t)}</category>`).join("\n      ")}
     </item>`
-  )
-  .join("");
+    )
+    .join("");
 
-const feed = `<?xml version="1.0" encoding="UTF-8"?>
+  const feed = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>terminus.ink</title>
@@ -60,5 +59,8 @@ const feed = `<?xml version="1.0" encoding="UTF-8"?>
   </channel>
 </rss>`;
 
-writeFileSync("public/feed.xml", feed.trim());
-console.log(`Generated public/feed.xml (${experiments.length} items)`);
+  writeFileSync("public/feed.xml", feed.trim());
+  console.log(`Generated public/feed.xml (${experiments.length} items)`);
+}
+
+main();

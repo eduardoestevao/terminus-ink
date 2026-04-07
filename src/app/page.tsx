@@ -1,9 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import ExperimentCard from "@/components/ExperimentCard";
-import { experiments } from "@/lib/data";
+import { fetchAllExperiments } from "@/lib/api-server";
+import type { Experiment } from "@/lib/types";
 
-export default function Home() {
+export default async function Home() {
+  const experiments: Experiment[] = await fetchAllExperiments();
   const hasExperiments = experiments.length > 0;
 
   return (

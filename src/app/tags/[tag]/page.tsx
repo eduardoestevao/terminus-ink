@@ -1,9 +1,11 @@
-import { getExperimentsByTag, getAllTags } from "@/lib/data";
+import { fetchAllExperiments, fetchAllTags } from "@/lib/api-server";
 import ExperimentCard from "@/components/ExperimentCard";
 import type { Metadata } from "next";
+import type { Experiment } from "@/lib/types";
 
 export async function generateStaticParams() {
-  return getAllTags().map(({ tag }) => ({ tag }));
+  const tags: { tag: string; count: number }[] = await fetchAllTags();
+  return tags.map(({ tag }) => ({ tag }));
 }
 
 export async function generateMetadata({
@@ -24,7 +26,8 @@ export default async function TagPage({
   params: Promise<{ tag: string }>;
 }) {
   const { tag } = await params;
-  const tagExperiments = getExperimentsByTag(tag);
+  const allExperiments: Experiment[] = await fetchAllExperiments();
+  const tagExperiments = allExperiments.filter((e) => e.tags.includes(tag));
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-10">

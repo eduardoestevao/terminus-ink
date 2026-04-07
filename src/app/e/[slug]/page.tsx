@@ -1,10 +1,15 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { experiments, getExperimentBySlug } from "@/lib/data";
+import {
+  fetchAllExperiments,
+  fetchExperimentBySlug,
+} from "@/lib/api-server";
 import TagBadge from "@/components/TagBadge";
 import type { Metadata } from "next";
+import type { Experiment } from "@/lib/types";
 
 export async function generateStaticParams() {
+  const experiments: Experiment[] = await fetchAllExperiments();
   return experiments.map((e) => ({ slug: e.slug }));
 }
 
@@ -14,7 +19,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const exp = getExperimentBySlug(slug);
+  const exp: Experiment | null = await fetchExperimentBySlug(slug);
   if (!exp) return { title: "Not found — terminus.ink" };
   return {
     title: `${exp.id}: ${exp.title} — terminus.ink`,
@@ -28,12 +33,11 @@ export default async function ExperimentPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const exp = getExperimentBySlug(slug);
+  const exp: Experiment | null = await fetchExperimentBySlug(slug);
   if (!exp) notFound();
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-10">
-      {/* Header */}
       <div className="mb-8">
         <div className="mb-3 flex items-center gap-3">
           <span className="font-mono text-sm font-medium text-gold">
@@ -54,21 +58,18 @@ export default async function ExperimentPage({
         )}
       </div>
 
-      {/* Question */}
       <Section label="Question">
         <p className="text-sm italic leading-relaxed text-text-secondary">
           {exp.question}
         </p>
       </Section>
 
-      {/* Setup */}
       <Section label="Setup">
         <p className="whitespace-pre-wrap text-sm leading-relaxed text-text-secondary">
           {exp.setup}
         </p>
       </Section>
 
-      {/* Results table */}
       <Section label="Results">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -102,7 +103,6 @@ export default async function ExperimentPage({
         </div>
       </Section>
 
-      {/* Key findings */}
       <Section label="Key findings">
         <ul className="space-y-2">
           {exp.keyFindings.map((finding, i) => (
@@ -116,7 +116,6 @@ export default async function ExperimentPage({
         </ul>
       </Section>
 
-      {/* Lesson learned */}
       {exp.lessonLearned && (
         <Section label="Lesson learned">
           <p className="text-sm leading-relaxed text-text-secondary">
@@ -125,7 +124,6 @@ export default async function ExperimentPage({
         </Section>
       )}
 
-      {/* Tools used */}
       {exp.toolsUsed && (
         <Section label="Tools used">
           <p className="text-sm leading-relaxed text-text-secondary">
@@ -134,7 +132,6 @@ export default async function ExperimentPage({
         </Section>
       )}
 
-      {/* Chain navigation */}
       {(exp.chainPrev || exp.chainNext) && (
         <Section label="Experiment chain">
           <div className="flex gap-4 text-sm">
@@ -158,7 +155,6 @@ export default async function ExperimentPage({
         </Section>
       )}
 
-      {/* Tags */}
       <div className="mt-8 flex flex-wrap gap-2">
         {exp.tags.map((tag) => (
           <TagBadge key={tag} tag={tag} />
