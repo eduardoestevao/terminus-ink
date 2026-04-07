@@ -32,12 +32,22 @@ export default async function ExperimentPage({
 
   return (
     <div className="mx-auto max-w-3xl px-6 py-10">
-      <Link
-        href="/"
-        className="mb-6 inline-flex items-center gap-1.5 font-mono text-xs text-text-muted transition-colors hover:text-gold"
-      >
-        &larr; Experiments
-      </Link>
+      <div className="mb-6 flex items-center justify-between">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 font-mono text-xs text-text-muted transition-colors hover:text-gold"
+        >
+          &larr; Experiments
+        </Link>
+        <Link
+          href={`/e/${slug}/md`}
+          target="_blank"
+          className="rounded border border-border px-2.5 py-1 font-mono text-xs text-text-muted transition-colors hover:border-border-hover hover:text-text-secondary"
+          title="View as raw Markdown (for LLM ingestion)"
+        >
+          /md
+        </Link>
+      </div>
 
       <div className="mb-8">
         <div className="mb-3 flex items-center gap-3">
