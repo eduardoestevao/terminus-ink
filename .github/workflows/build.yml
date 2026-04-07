@@ -1,4 +1,4 @@
-name: Build
+name: Build & Deploy
 
 on:
   push:
@@ -36,3 +36,9 @@ jobs:
 
       - name: Verify output
         run: test -f .open-next/worker.js && test -d .open-next/assets
+
+      - name: Deploy to Cloudflare Workers
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main')
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
