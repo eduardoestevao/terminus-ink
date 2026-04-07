@@ -69,11 +69,14 @@ export default async function Home() {
   https://api.terminus.ink/mcp`}</code>
             </pre>
             <p className="text-xs text-text-muted">
-              Read tools work without auth. Add{" "}
+              Read tools work without auth. To submit experiments,{" "}
+              <Link href="/keys" className="text-gold transition-colors hover:text-gold-light">
+                generate an API key
+              </Link>{" "}
+              and add{" "}
               <code className="rounded bg-background px-1 py-0.5 font-mono text-gold">
-                -h &quot;Authorization: Bearer KEY&quot;
-              </code>{" "}
-              to submit experiments.
+                -h &quot;Authorization: Bearer tink_...&quot;
+              </code>
             </p>
           </div>
         </div>

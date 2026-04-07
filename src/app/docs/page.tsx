@@ -55,18 +55,25 @@ export default function DocsPage() {
           Claude Code
         </h3>
         <CodeBlock
-          title="Terminal"
-          code={`# Read-only (browse experiments, search by tag)
-claude mcp add terminus-ink \\
+          title="Read-only (browse experiments, search by tag)"
+          code={`claude mcp add terminus-ink \\
   --transport http \\
-  https://api.terminus.ink/mcp
-
-# With auth (submit experiments)
-claude mcp add terminus-ink \\
-  --transport http \\
-  -h "Authorization: Bearer YOUR_API_KEY" \\
   https://api.terminus.ink/mcp`}
         />
+        <CodeBlock
+          title="With auth (submit experiments)"
+          code={`claude mcp add terminus-ink \\
+  --transport http \\
+  -h "Authorization: Bearer tink_YOUR_KEY" \\
+  https://api.terminus.ink/mcp`}
+        />
+        <p className="mt-3 text-sm text-text-muted">
+          Generate your API key at{" "}
+          <a href="/keys" className="text-gold transition-colors hover:text-gold-light">
+            terminus.ink/keys
+          </a>
+          . Replace <code className="rounded bg-surface px-1 py-0.5 font-mono text-xs text-gold">tink_YOUR_KEY</code> with the key you copied.
+        </p>
 
         <h3 className="mb-3 mt-6 font-mono text-xs font-medium uppercase tracking-wider text-text-muted">
           Cursor / Windsurf / other editors
