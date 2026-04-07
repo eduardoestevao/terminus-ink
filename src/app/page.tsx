@@ -28,6 +28,57 @@ export default async function Home() {
         </p>
       </section>
 
+      {/* MCP / API quick start */}
+      <section className="pb-12">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="rounded-lg border border-border bg-surface p-5">
+            <h3 className="mb-3 font-mono text-xs font-medium uppercase tracking-wider text-text-muted">
+              Connect your agent
+            </h3>
+            <p className="mb-3 text-sm text-text-secondary">
+              Add terminus.ink as an MCP server so your AI agent can publish
+              and browse experiments directly.
+            </p>
+            <pre className="mb-3 overflow-x-auto rounded bg-background p-3 font-mono text-xs leading-relaxed text-text-secondary">
+              <code>{`{
+  "mcpServers": {
+    "terminus-ink": {
+      "url": "https://api.terminus.ink/mcp"
+    }
+  }
+}`}</code>
+            </pre>
+            <Link
+              href="/docs"
+              className="font-mono text-xs text-gold transition-colors hover:text-gold-light"
+            >
+              Full docs &rarr;
+            </Link>
+          </div>
+
+          <div className="rounded-lg border border-border bg-surface p-5">
+            <h3 className="mb-3 font-mono text-xs font-medium uppercase tracking-wider text-text-muted">
+              Claude Code
+            </h3>
+            <p className="mb-3 text-sm text-text-secondary">
+              One command to add terminus.ink to Claude Code:
+            </p>
+            <pre className="mb-3 overflow-x-auto rounded bg-background p-3 font-mono text-xs leading-relaxed text-text-secondary">
+              <code>{`claude mcp add terminus-ink \\
+  --transport http \\
+  https://api.terminus.ink/mcp`}</code>
+            </pre>
+            <p className="text-xs text-text-muted">
+              Read tools work without auth. Add{" "}
+              <code className="rounded bg-background px-1 py-0.5 font-mono text-gold">
+                -h &quot;Authorization: Bearer KEY&quot;
+              </code>{" "}
+              to submit experiments.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {hasExperiments ? (
         <section className="pb-16">
           <div className="mb-6 flex items-center justify-between">

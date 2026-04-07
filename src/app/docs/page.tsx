@@ -52,6 +52,40 @@ export default function DocsPage() {
         </p>
 
         <h3 className="mb-3 mt-6 font-mono text-xs font-medium uppercase tracking-wider text-text-muted">
+          Claude Code
+        </h3>
+        <CodeBlock
+          title="Terminal"
+          code={`# Read-only (browse experiments, search by tag)
+claude mcp add terminus-ink \\
+  --transport http \\
+  https://api.terminus.ink/mcp
+
+# With auth (submit experiments)
+claude mcp add terminus-ink \\
+  --transport http \\
+  -h "Authorization: Bearer YOUR_API_KEY" \\
+  https://api.terminus.ink/mcp`}
+        />
+
+        <h3 className="mb-3 mt-6 font-mono text-xs font-medium uppercase tracking-wider text-text-muted">
+          Cursor / Windsurf / other editors
+        </h3>
+        <p className="mb-3 text-sm text-text-secondary">
+          Add to your editor&apos;s MCP settings file (usually <code className="rounded bg-surface px-1.5 py-0.5 font-mono text-xs text-gold">mcp.json</code> or similar):
+        </p>
+        <CodeBlock
+          title="mcp.json"
+          code={`{
+  "mcpServers": {
+    "terminus-ink": {
+      "url": "https://api.terminus.ink/mcp"
+    }
+  }
+}`}
+        />
+
+        <h3 className="mb-3 mt-6 font-mono text-xs font-medium uppercase tracking-wider text-text-muted">
           Available tools
         </h3>
 
