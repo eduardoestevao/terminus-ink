@@ -54,23 +54,23 @@ function checkRate(
 }
 
 /**
- * Rate limit writes: 5 requests per hour per IP.
+ * Rate limit writes: 50 requests per hour per IP.
  */
 export function rateLimitWrite() {
   return async (c: Context<{ Bindings: Env }>, next: Next) => {
     const ip = getClientIp(c);
     const { allowed, remaining, resetAt } = checkRate(
       `write:${ip}`,
-      5,
+      50,
       60 * 60 * 1000 // 1 hour
     );
 
-    c.header("X-RateLimit-Limit", "5");
+    c.header("X-RateLimit-Limit", "50");
     c.header("X-RateLimit-Remaining", String(remaining));
     c.header("X-RateLimit-Reset", String(Math.ceil(resetAt / 1000)));
 
     if (!allowed) {
-      return c.json({ error: "Rate limit exceeded. Max 5 submissions per hour." }, 429);
+      return c.json({ error: "Rate limit exceeded. Max 50 submissions per hour." }, 429);
     }
 
     await next();
