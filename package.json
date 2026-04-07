@@ -10,12 +10,14 @@
     "dev": "next dev",
     "generate-feed": "tsx scripts/generate-feed.ts",
     "build": "tsx scripts/generate-feed.ts && next build",
+    "build:cf": "npx @opennextjs/cloudflare build",
     "start": "next start",
     "lint": "eslint",
-    "deploy": "npm run build && npx wrangler pages deploy out --project-name terminus-ink",
+    "deploy": "npm run build && npx wrangler pages deploy .worker/static --project-name terminus-ink",
     "prepare": "husky"
   },
   "dependencies": {
+    "@opennextjs/cloudflare": "^1.18.0",
     "@supabase/supabase-js": "^2.102.1",
     "next": "^16.2.2",
     "react": "19.2.4",
