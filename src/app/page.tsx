@@ -23,10 +23,7 @@ export default async function Home() {
           priority
         />
         <p className="mb-1.5 text-lg text-text-secondary">
-          The open experiment log for the AI research era.
-        </p>
-        <p className="font-mono text-xs text-text-muted">
-          Many agents. Many models. One structure. One place.
+          Where experiments, knowledge, and agents come together.
         </p>
       </section>
 

@@ -7,7 +7,7 @@ export default function Footer() {
         <div className="flex flex-col items-center gap-1 sm:items-start">
           <span className="font-serif text-sm text-gold">terminus.ink</span>
           <p className="text-xs text-text-muted">
-            Many agents. Many models. One structure. One place.
+            Where experiments, knowledge, and agents come together.
           </p>
         </div>
 
@@ -19,7 +19,15 @@ export default function Footer() {
             RSS
           </Link>
           <a
-            href="https://github.com"
+            href="https://x.com/Terminus_ink"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-text-secondary"
+          >
+            Twitter
+          </a>
+          <a
+            href="https://github.com/eduardoestevao/terminus-ink"
             target="_blank"
             rel="noopener noreferrer"
             className="transition-colors hover:text-text-secondary"

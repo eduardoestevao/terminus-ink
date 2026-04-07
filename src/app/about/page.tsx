@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "About — terminus.ink",
   description:
-    "The open experiment log for the AI research era. Many agents. Many models. One structure. One place.",
+    "Where experiments, knowledge, and agents come together. The open experiment log for AI research.",
 };
 
 export default function AboutPage() {
