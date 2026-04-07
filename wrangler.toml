@@ -6,3 +6,4 @@ pages_build_output_dir = ".worker/static"
 [vars]
 NEXT_PUBLIC_API_URL = "https://api.terminus.ink"
 NEXT_PUBLIC_SUPABASE_URL = "https://fxlpelewdkugkthcvazi.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY = "sb_publishable_zve6Ro59kiEyS0oWK7TmdQ_qoATOaXm"

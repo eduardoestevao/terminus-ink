@@ -6,4 +6,5 @@ description = "Allowlist for terminus-ink"
 paths = [
   '''package-lock\.json''',
   '''\.generated/''',
+  '''wrangler\.toml''',
 ]
