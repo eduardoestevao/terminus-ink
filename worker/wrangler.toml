@@ -1,13 +1,14 @@
 name = "terminus-api"
+account_id = "5f8a6d4c3c3173fe880d804a12a992ac"
 main = "src/index.ts"
 compatibility_date = "2026-04-07"
 compatibility_flags = ["nodejs_compat"]
 
 [vars]
 FRONTEND_ORIGIN = "https://terminus-ink.pages.dev"
+SUPABASE_URL = "https://fxlpelewdkugkthcvazi.supabase.co"
 
 # Set secrets via: npx wrangler secret put <NAME>
 # Required secrets:
-#   SUPABASE_URL
 #   SUPABASE_SERVICE_ROLE_KEY
 #   SUPABASE_ANON_KEY
