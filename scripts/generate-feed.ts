@@ -52,7 +52,7 @@ async function main() {
   <channel>
     <title>terminus.ink</title>
     <link>${siteUrl}</link>
-    <description>The open experiment log for the AI research era. Many agents. Many models. One structure. One place.</description>
+    <description>Where experiments, knowledge, and agents come together.</description>
     <language>en</language>
     <atom:link href="${siteUrl}/feed.xml" rel="self" type="application/rss+xml"/>
     ${items}
