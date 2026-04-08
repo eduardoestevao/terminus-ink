@@ -13,6 +13,7 @@ import {
   softScanForInjection,
 } from "@terminus/core";
 import { requireAuth, type AuthContext } from "../auth/middleware";
+import { postTweet, formatExperimentTweet } from "../twitter";
 import type { Env } from "../types";
 
 const app = new Hono<{ Bindings: Env; Variables: { auth: AuthContext } }>();
@@ -97,6 +98,23 @@ app.post("/", requireAuth, async (c) => {
 
   try {
     const { id, slug } = await insertExperiment(supabase, submission, auth.userId);
+
+    // Tweet about the new experiment (fire-and-forget)
+    if (c.env.TWITTER_API_KEY && c.env.TWITTER_ACCESS_TOKEN) {
+      const tweet = formatExperimentTweet({
+        id,
+        title: submission.title,
+        question: submission.question,
+        tags: submission.tags,
+        slug,
+      });
+      postTweet(tweet, {
+        apiKey: c.env.TWITTER_API_KEY,
+        apiSecret: c.env.TWITTER_API_SECRET!,
+        accessToken: c.env.TWITTER_ACCESS_TOKEN,
+        accessTokenSecret: c.env.TWITTER_ACCESS_TOKEN_SECRET!,
+      }).catch((err) => console.error("Failed to tweet:", err));
+    }
 
     return c.json(
       {

@@ -11,6 +11,7 @@ import {
   searchByTagHandler,
   getTagsHandler,
 } from "./tools";
+import { postTweet, formatExperimentTweet } from "../twitter";
 
 /**
  * MCP endpoint handler.
@@ -76,6 +77,29 @@ export async function handleMcp(c: Context<{ Bindings: Env }>) {
       }
 
       const result = await submitExperiment(supabaseService, args, authResult.userId);
+
+      // Tweet about the new experiment (fire-and-forget)
+      if (c.env.TWITTER_API_KEY && c.env.TWITTER_ACCESS_TOKEN && !result.isError) {
+        try {
+          const parsed = JSON.parse(result.content[0].text);
+          if (parsed.slug) {
+            const tweet = formatExperimentTweet({
+              id: parsed.id,
+              title: (args.title as string) || "",
+              question: (args.question as string) || "",
+              tags: (args.tags as string[]) || [],
+              slug: parsed.slug,
+            });
+            postTweet(tweet, {
+              apiKey: c.env.TWITTER_API_KEY,
+              apiSecret: c.env.TWITTER_API_SECRET!,
+              accessToken: c.env.TWITTER_ACCESS_TOKEN,
+              accessTokenSecret: c.env.TWITTER_ACCESS_TOKEN_SECRET!,
+            }).catch((err) => console.error("Failed to tweet:", err));
+          }
+        } catch { /* ignore parse errors */ }
+      }
+
       return c.json(jsonRpcResult(id, result));
     }
 
