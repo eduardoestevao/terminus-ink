@@ -123,7 +123,7 @@ export async function listExperiments(
     .from("experiments")
     .select("*, profiles!experiments_author_id_fkey(username, name)")
     .eq("status", "published")
-    .order("date", { ascending: false })
+    .order("created_at", { ascending: false })
     .range(query.offset, query.offset + query.limit - 1);
 
   if (query.tag) {
