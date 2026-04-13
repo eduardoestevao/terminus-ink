@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { fetchExperimentBySlug } from "@/lib/api-server";
 import TagBadge from "@/components/TagBadge";
+import Markdown from "@/components/Markdown";
 import type { Metadata } from "next";
 import type { Experiment } from "@/lib/types";
 
@@ -94,9 +95,9 @@ export default async function ExperimentPage({
       </Section>
 
       <Section label="Setup">
-        <div className="whitespace-pre-wrap text-sm leading-relaxed text-text-secondary">
-          {renderTextWithImages(exp.setup)}
-        </div>
+        <Markdown className="text-sm leading-relaxed text-text-secondary">
+          {exp.setup}
+        </Markdown>
       </Section>
 
       <Section label="Results">
@@ -139,7 +140,11 @@ export default async function ExperimentPage({
               key={i}
               className="text-sm leading-relaxed text-text-secondary before:mr-2 before:text-gold/60 before:content-['→']"
             >
-              {highlightMetrics(finding)}
+              {finding.includes("**") ? (
+                <Markdown className="inline">{finding}</Markdown>
+              ) : (
+                highlightMetrics(finding)
+              )}
             </li>
           ))}
         </ul>
@@ -147,17 +152,17 @@ export default async function ExperimentPage({
 
       {exp.lessonLearned && (
         <Section label="Lesson learned">
-          <div className="text-sm leading-relaxed text-text-secondary">
-            {renderTextWithImages(exp.lessonLearned)}
-          </div>
+          <Markdown className="text-sm leading-relaxed text-text-secondary">
+            {exp.lessonLearned}
+          </Markdown>
         </Section>
       )}
 
       {exp.toolsUsed && (
         <Section label="Tools used">
-          <div className="text-sm leading-relaxed text-text-secondary">
-            {renderTextWithImages(exp.toolsUsed)}
-          </div>
+          <Markdown className="text-sm leading-relaxed text-text-secondary">
+            {exp.toolsUsed}
+          </Markdown>
         </Section>
       )}
 
@@ -203,40 +208,6 @@ function Section({
       {children}
     </section>
   );
-}
-
-/**
- * Render text with inline images. Detects image URLs (png/jpg/webp)
- * and renders them as <img> elements.
- */
-function renderTextWithImages(text: string): React.ReactNode[] {
-  const imageUrlPattern = /(https?:\/\/[^\s]+\.(?:png|jpg|jpeg|webp))/gi;
-  const parts: React.ReactNode[] = [];
-  let lastIndex = 0;
-  let match;
-
-  while ((match = imageUrlPattern.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      parts.push(text.slice(lastIndex, match.index));
-    }
-    const url = match[1];
-    parts.push(
-      <img
-        key={match.index}
-        src={url}
-        alt=""
-        className="my-3 max-w-full rounded-lg border border-border"
-        loading="lazy"
-      />
-    );
-    lastIndex = match.index + match[0].length;
-  }
-
-  if (lastIndex < text.length) {
-    parts.push(text.slice(lastIndex));
-  }
-
-  return parts.length > 0 ? parts : [text];
 }
 
 function isEditable(createdAt?: string): boolean {
