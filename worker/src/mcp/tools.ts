@@ -186,42 +186,43 @@ export async function editExperiment(
 }
 
 /**
- * upload_image — upload a base64-encoded image, returns a URL to use in experiment text.
+ * upload_image — fetch an image from a URL and store it. Returns a terminus.ink URL.
+ * For local files, agents should use: curl -X POST api.terminus.ink/api/images -H "Authorization: Bearer tink_..." -F "file=@image.png"
  */
 export async function uploadImage(
   r2: R2Bucket,
   args: Record<string, unknown>
 ): Promise<ToolResult> {
-  const data = typeof args.data === "string" ? args.data : "";
-  const mimeType = typeof args.mimeType === "string" ? args.mimeType : "";
-
-  if (!data) return error("data (base64 string) is required");
-  if (!mimeType) return error("mimeType is required (image/png, image/jpeg, or image/webp)");
+  const imageUrl = typeof args.url === "string" ? args.url : "";
+  if (!imageUrl) return error("url is required — provide a publicly accessible image URL");
 
   const allowedTypes: Record<string, string> = {
     "image/png": "png",
     "image/jpeg": "jpg",
     "image/webp": "webp",
   };
-  const ext = allowedTypes[mimeType];
-  if (!ext) return error(`Unsupported type: ${mimeType}. Allowed: png, jpg, webp`);
 
-  // Decode base64
-  let fileBytes: ArrayBuffer;
+  // Fetch the image
+  let res: Response;
   try {
-    const clean = data.replace(/^data:[^;]+;base64,/, "");
-    const binary = atob(clean);
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-      bytes[i] = binary.charCodeAt(i);
-    }
-    fileBytes = bytes.buffer;
+    res = await fetch(imageUrl);
   } catch {
-    return error("Invalid base64 data");
+    return error(`Failed to fetch image from URL: ${imageUrl}`);
   }
 
+  if (!res.ok) {
+    return error(`Image URL returned ${res.status}: ${imageUrl}`);
+  }
+
+  const contentType = res.headers.get("Content-Type")?.split(";")[0]?.trim() || "";
+  const ext = allowedTypes[contentType];
+  if (!ext) {
+    return error(`Unsupported image type: ${contentType}. Allowed: png, jpg, webp`);
+  }
+
+  const fileBytes = await res.arrayBuffer();
   if (fileBytes.byteLength > 5 * 1024 * 1024) {
-    return error("File too large. Max 5MB.");
+    return error(`Image too large (${(fileBytes.byteLength / 1024 / 1024).toFixed(1)}MB). Max 5MB.`);
   }
 
   const hashBytes = new Uint8Array(await crypto.subtle.digest("SHA-256", fileBytes));
@@ -232,14 +233,19 @@ export async function uploadImage(
 
   try {
     await r2.put(key, fileBytes, {
-      httpMetadata: { contentType: mimeType },
+      httpMetadata: { contentType },
     });
   } catch (err) {
     return error(err instanceof Error ? err.message : "Failed to upload image");
   }
 
   const url = `https://api.terminus.ink/images/${key}`;
-  return ok(JSON.stringify({ url, key, usage: `Include this URL in your experiment text fields. It will render as an image.` }, null, 2));
+  return ok(JSON.stringify({
+    url,
+    key,
+    usage: "Include this URL in your experiment text fields (setup, keyFindings, etc). It will render as an inline image.",
+    tip: "For local files, use: curl -X POST https://api.terminus.ink/api/images -H 'Authorization: Bearer tink_...' -F 'file=@image.png'",
+  }, null, 2));
 }
 
 function ok(text: string): ToolResult {

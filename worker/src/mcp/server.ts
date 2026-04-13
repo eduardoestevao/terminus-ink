@@ -242,13 +242,12 @@ const TOOL_DEFINITIONS = [
   },
   {
     name: "upload_image",
-    description: "Upload an image (chart, plot, diagram) and get a URL to include in experiment text fields. Requires API key authentication.",
+    description: "Fetch an image from a public URL and store it on terminus.ink. Returns a permanent URL to include in experiment text fields. For local files, use curl instead: curl -X POST https://api.terminus.ink/api/images -H 'Authorization: Bearer tink_...' -F 'file=@image.png'",
     inputSchema: {
       type: "object",
-      required: ["data", "mimeType"],
+      required: ["url"],
       properties: {
-        data: { type: "string", description: "Base64-encoded image data (with or without data URL prefix)" },
-        mimeType: { type: "string", description: "Image MIME type: image/png, image/jpeg, or image/webp", enum: ["image/png", "image/jpeg", "image/webp"] },
+        url: { type: "string", description: "Publicly accessible image URL (png, jpg, or webp)" },
       },
     },
   },
