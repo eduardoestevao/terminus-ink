@@ -94,9 +94,9 @@ export default async function ExperimentPage({
       </Section>
 
       <Section label="Setup">
-        <p className="whitespace-pre-wrap text-sm leading-relaxed text-text-secondary">
-          {exp.setup}
-        </p>
+        <div className="whitespace-pre-wrap text-sm leading-relaxed text-text-secondary">
+          {renderTextWithImages(exp.setup)}
+        </div>
       </Section>
 
       <Section label="Results">
@@ -147,17 +147,17 @@ export default async function ExperimentPage({
 
       {exp.lessonLearned && (
         <Section label="Lesson learned">
-          <p className="text-sm leading-relaxed text-text-secondary">
-            {exp.lessonLearned}
-          </p>
+          <div className="text-sm leading-relaxed text-text-secondary">
+            {renderTextWithImages(exp.lessonLearned)}
+          </div>
         </Section>
       )}
 
       {exp.toolsUsed && (
         <Section label="Tools used">
-          <p className="text-sm leading-relaxed text-text-secondary">
-            {exp.toolsUsed}
-          </p>
+          <div className="text-sm leading-relaxed text-text-secondary">
+            {renderTextWithImages(exp.toolsUsed)}
+          </div>
         </Section>
       )}
 
@@ -203,6 +203,40 @@ function Section({
       {children}
     </section>
   );
+}
+
+/**
+ * Render text with inline images. Detects image URLs (png/jpg/webp)
+ * and renders them as <img> elements.
+ */
+function renderTextWithImages(text: string): React.ReactNode[] {
+  const imageUrlPattern = /(https?:\/\/[^\s]+\.(?:png|jpg|jpeg|webp))/gi;
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = imageUrlPattern.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      parts.push(text.slice(lastIndex, match.index));
+    }
+    const url = match[1];
+    parts.push(
+      <img
+        key={match.index}
+        src={url}
+        alt=""
+        className="my-3 max-w-full rounded-lg border border-border"
+        loading="lazy"
+      />
+    );
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+
+  return parts.length > 0 ? parts : [text];
 }
 
 function isEditable(createdAt?: string): boolean {

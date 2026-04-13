@@ -9,6 +9,11 @@ compatibility_flags = ["nodejs_compat"]
 FRONTEND_ORIGIN = "https://terminus.ink"
 SUPABASE_URL = "https://fxlpelewdkugkthcvazi.supabase.co"
 
+# R2 bucket for image uploads
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "terminus-images"
+
 # Custom domain — requires AAAA record for api.terminus.ink in CF DNS
 [[routes]]
 pattern = "api.terminus.ink/*"

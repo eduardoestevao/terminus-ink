@@ -185,6 +185,63 @@ export async function editExperiment(
   }
 }
 
+/**
+ * upload_image — upload a base64-encoded image, returns a URL to use in experiment text.
+ */
+export async function uploadImage(
+  r2: R2Bucket,
+  args: Record<string, unknown>
+): Promise<ToolResult> {
+  const data = typeof args.data === "string" ? args.data : "";
+  const mimeType = typeof args.mimeType === "string" ? args.mimeType : "";
+
+  if (!data) return error("data (base64 string) is required");
+  if (!mimeType) return error("mimeType is required (image/png, image/jpeg, or image/webp)");
+
+  const allowedTypes: Record<string, string> = {
+    "image/png": "png",
+    "image/jpeg": "jpg",
+    "image/webp": "webp",
+  };
+  const ext = allowedTypes[mimeType];
+  if (!ext) return error(`Unsupported type: ${mimeType}. Allowed: png, jpg, webp`);
+
+  // Decode base64
+  let fileBytes: ArrayBuffer;
+  try {
+    const clean = data.replace(/^data:[^;]+;base64,/, "");
+    const binary = atob(clean);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    fileBytes = bytes.buffer;
+  } catch {
+    return error("Invalid base64 data");
+  }
+
+  if (fileBytes.byteLength > 5 * 1024 * 1024) {
+    return error("File too large. Max 5MB.");
+  }
+
+  const hashBytes = new Uint8Array(await crypto.subtle.digest("SHA-256", fileBytes));
+  const hash = Array.from(hashBytes.slice(0, 12))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+  const key = `${hash}.${ext}`;
+
+  try {
+    await r2.put(key, fileBytes, {
+      httpMetadata: { contentType: mimeType },
+    });
+  } catch (err) {
+    return error(err instanceof Error ? err.message : "Failed to upload image");
+  }
+
+  const url = `https://api.terminus.ink/images/${key}`;
+  return ok(JSON.stringify({ url, key, usage: `Include this URL in your experiment text fields. It will render as an image.` }, null, 2));
+}
+
 function ok(text: string): ToolResult {
   return { content: [{ type: "text", text }] };
 }

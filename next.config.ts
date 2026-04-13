@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
             "default-src 'self'",
             "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://static.cloudflareinsights.com",
             "style-src 'self' 'unsafe-inline'",
-            "img-src 'self' data: blob:",
+            "img-src 'self' data: blob: https://api.terminus.ink",
             "font-src 'self'",
             `connect-src 'self' https://api.terminus.ink https://*.supabase.co`,
             "frame-ancestors 'none'",

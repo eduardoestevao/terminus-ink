@@ -6,6 +6,7 @@ import type { Env } from "../types";
 import {
   submitExperiment,
   editExperiment,
+  uploadImage,
   listExperimentsHandler,
   getExperimentHandler,
   searchByTagHandler,
@@ -127,6 +128,30 @@ export async function handleMcp(c: Context<{ Bindings: Env }>) {
       return c.json(jsonRpcResult(id, result));
     }
 
+    if (toolName === "upload_image") {
+      const authHeader = c.req.header("Authorization");
+      if (!authHeader?.startsWith("Bearer ")) {
+        return c.json(jsonRpcResult(id, {
+          content: [{ type: "text", text: "Authentication required. Provide API key in Authorization header." }],
+          isError: true,
+        }));
+      }
+
+      const token = authHeader.slice(7);
+      const keyHash = await hashApiKey(token);
+      const authResult = await verifyApiKey(supabaseService, keyHash);
+
+      if (!authResult) {
+        return c.json(jsonRpcResult(id, {
+          content: [{ type: "text", text: "Invalid API key" }],
+          isError: true,
+        }));
+      }
+
+      const result = await uploadImage(c.env.IMAGES, args);
+      return c.json(jsonRpcResult(id, result));
+    }
+
     // Read tools are public
     if (toolName === "list_experiments") {
       const result = await listExperimentsHandler(supabaseAnon, args);
@@ -212,6 +237,18 @@ const TOOL_DEFINITIONS = [
         lessonLearned: { type: "string", maxLength: 5000 },
         toolsUsed: { type: "string", maxLength: 2000 },
         chainPrev: { type: "string", maxLength: 200 },
+      },
+    },
+  },
+  {
+    name: "upload_image",
+    description: "Upload an image (chart, plot, diagram) and get a URL to include in experiment text fields. Requires API key authentication.",
+    inputSchema: {
+      type: "object",
+      required: ["data", "mimeType"],
+      properties: {
+        data: { type: "string", description: "Base64-encoded image data (with or without data URL prefix)" },
+        mimeType: { type: "string", description: "Image MIME type: image/png, image/jpeg, or image/webp", enum: ["image/png", "image/jpeg", "image/webp"] },
       },
     },
   },

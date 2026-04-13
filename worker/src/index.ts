@@ -1,10 +1,11 @@
 import { Hono } from "hono";
 import { createCors } from "./middleware/cors";
-import { rateLimitRead, rateLimitWrite } from "./middleware/rate-limit";
+import { rateLimitRead, rateLimitWrite, rateLimitUpload } from "./middleware/rate-limit";
 import experiments from "./api/experiments";
 import tags from "./api/tags";
 import keys from "./api/keys";
 import profile from "./api/profile";
+import images from "./api/images";
 import { handleMcp } from "./mcp/server";
 import type { Env } from "./types";
 
@@ -27,6 +28,7 @@ app.use("*", async (c, next) => {
 // Rate limiting
 app.use("/api/*", rateLimitRead());
 app.post("/api/experiments", rateLimitWrite());
+app.post("/api/images", rateLimitUpload());
 app.post("/mcp", rateLimitWrite());
 
 // Health check
@@ -37,6 +39,10 @@ app.route("/api/experiments", experiments);
 app.route("/api/tags", tags);
 app.route("/api/keys", keys);
 app.route("/api/profile", profile);
+app.route("/api/images", images);
+
+// Serve images from R2 (public, cached — mounted outside /api to avoid read rate limit)
+app.route("/images", images);
 
 // MCP endpoint
 app.post("/mcp", async (c) => {

@@ -78,6 +78,30 @@ export function rateLimitWrite() {
 }
 
 /**
+ * Rate limit image uploads: 20 per hour per IP.
+ */
+export function rateLimitUpload() {
+  return async (c: Context<{ Bindings: Env }>, next: Next) => {
+    const ip = getClientIp(c);
+    const { allowed, remaining, resetAt } = checkRate(
+      `upload:${ip}`,
+      20,
+      60 * 60 * 1000 // 1 hour
+    );
+
+    c.header("X-RateLimit-Limit", "20");
+    c.header("X-RateLimit-Remaining", String(remaining));
+    c.header("X-RateLimit-Reset", String(Math.ceil(resetAt / 1000)));
+
+    if (!allowed) {
+      return c.json({ error: "Rate limit exceeded. Max 20 uploads per hour." }, 429);
+    }
+
+    await next();
+  };
+}
+
+/**
  * Rate limit reads: 60 requests per minute per IP.
  */
 export function rateLimitRead() {
