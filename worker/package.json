@@ -9,14 +9,14 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@terminus/core": "*",
-    "hono": "^4",
+    "@modelcontextprotocol/sdk": "^1.29",
     "@supabase/supabase-js": "^2",
-    "@modelcontextprotocol/sdk": "^1.29"
+    "@terminus/core": "*",
+    "hono": "^4"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4",
-    "typescript": "^5",
-    "wrangler": "^4"
+    "@cloudflare/workers-types": "^4.20260413.1",
+    "typescript": "^6",
+    "wrangler": "^4.81.1"
   }
 }
